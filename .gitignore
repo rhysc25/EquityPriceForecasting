@@ -4,6 +4,10 @@ AlpacaKeys.py
 __pycache__/
 *.py[cod]
 *$py.class
+*AlpacaKeys.cpython-311.pyc
+*DataDisplay.cpython-311.pyc
+
+
 
 # C extensions
 *.so
