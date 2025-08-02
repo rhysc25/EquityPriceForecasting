@@ -1,10 +1,32 @@
-from DataProcess import timeArray, vwArray
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
+import numpy as np
 
-plt.figure(1)
-plt.clf()
-plt.xlabel('time (s)')
-plt.grid()
-plt.plot(timeArray, vwArray, label='Volume Weighted Average Price')
-plt.legend()
-plt.show()
+def dataDisplay(timeArray, vwArray, parameters):
+    plt.clf()
+    
+    symbol = parameters["symbols"]
+    title = symbol + " Price"
+    print(title)
+    plt.title(title)
+    plt.xlabel('Time')
+
+    if parameters["currency"] == "":
+        units = "USD"
+    else:
+        units = parameters["currency"]
+
+    plt.ylabel("Price /" + units)
+
+    ax = plt.gca()
+    ax.xaxis.set_major_locator(MaxNLocator(nbins=10))  # Limit to 10 ticks
+    plt.xticks(rotation=45)
+
+    #datetimeArray = np.array([])
+    #for date in timeArray:
+    #    datetimeArray = np.append(datetimeArray, date[1:8])
+
+    plt.grid()
+    plt.plot(timeArray, vwArray, label='Volume Weighted Average Price')
+    plt.legend()
+    plt.show()
