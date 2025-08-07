@@ -22,4 +22,4 @@ def dataProcess(marketData, parameters):
         timeArray = np.append(timeArray, marketDataFrame["t"][i])
         vwArray = np.append(vwArray, marketDataFrame["vw"][i])
 
-    return timeArray, vwArray
+    return timeArray, vwArray, marketDataFrame

@@ -22,10 +22,6 @@ def dataDisplay(timeArray, vwArray, parameters):
     ax.xaxis.set_major_locator(MaxNLocator(nbins=10))  # Limit to 10 ticks
     plt.xticks(rotation=45)
 
-    #datetimeArray = np.array([])
-    #for date in timeArray:
-    #    datetimeArray = np.append(datetimeArray, date[1:8])
-
     plt.grid()
     plt.plot(timeArray, vwArray, label='Volume Weighted Average Price')
     plt.legend()
