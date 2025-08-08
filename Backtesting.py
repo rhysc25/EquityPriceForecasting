@@ -8,7 +8,7 @@ def betaReturns(marketDataFrame):
 
     return percReturns
 
-def movingAverageBacktest(marketDataFrame, orders, balance, propBuy, propSell):
+def backtest(marketDataFrame, orders, balance, propBuy, propSell):
     shape = marketDataFrame.shape
     rowsTotal, columnsTotal = shape[0], shape[1]
     
@@ -33,3 +33,19 @@ def movingAverageBacktest(marketDataFrame, orders, balance, propBuy, propSell):
 def alphaCalc(betaReturns, Returns):
     alpha = Returns - betaReturns
     return alpha
+
+def andOrderLists(orders1, orders2):
+    orders = []
+    orders2Dict = {}
+    for order in orders2:
+        orders2Dict[order[1]] = order[0]
+    
+    for order in orders1:
+        try: 
+            temp = orders2Dict[order[1]]
+            if temp == order[0]:
+                orders.append(order)
+        except:
+            pass
+  
+    return orders
