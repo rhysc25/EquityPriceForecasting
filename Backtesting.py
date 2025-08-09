@@ -8,12 +8,15 @@ def betaReturns(marketDataFrame):
 
     return percReturns
 
-def backtest(marketDataFrame, orders, balance, propBuy, propSell):
+def backtest(marketDataFrame, orders, balance, propInitBuy, propBuy, propSell):
     shape = marketDataFrame.shape
     rowsTotal, columnsTotal = shape[0], shape[1]
     
     initialBalance = balance
     sharesOwned = 0
+    
+    sharesOwned += (balance * propInitBuy)/marketDataFrame["c"][0]
+    balance -= (balance*propInitBuy)
     
     for order in orders:
         num = order[1]

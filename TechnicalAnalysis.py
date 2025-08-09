@@ -168,9 +168,9 @@ marketDataFrame, RSIOrders = RSI(marketDataFrame=marketDataFrame, periods=20)
 bothIntoAccountOrders = andOrderLists(orders1=movingAverageOrders,orders2=RSIOrders)
 
 betaReturn = betaReturns(marketDataFrame=marketDataFrame)
-movingAverageBacktestReturn = backtest(marketDataFrame=marketDataFrame, orders=movingAverageOrders, balance=100, propBuy=0.1, propSell=0.05)
-RSIBacktestReturn = backtest(marketDataFrame=marketDataFrame, orders = RSIOrders, balance=100, propBuy=0.1, propSell=0.05)
-bothIntoAccountReturn = backtest(marketDataFrame=marketDataFrame, orders = bothIntoAccountOrders, balance=100, propBuy=0.1, propSell=0.05)
+movingAverageBacktestReturn = backtest(marketDataFrame=marketDataFrame, orders=movingAverageOrders, balance=100, propInitBuy=1, propBuy=0.1, propSell=0.05)
+RSIBacktestReturn = backtest(marketDataFrame=marketDataFrame, orders = RSIOrders, balance=100, propInitBuy=1, propBuy=0.1, propSell=0.05)
+bothIntoAccountReturn = backtest(marketDataFrame=marketDataFrame, orders = bothIntoAccountOrders, balance=100, propInitBuy= 1, propBuy=0.1, propSell=0.05)
 
 
 alpha1 = alphaCalc(betaReturns=betaReturn, Returns= movingAverageBacktestReturn)
@@ -178,6 +178,6 @@ alpha2 = alphaCalc(betaReturns=betaReturn, Returns=RSIBacktestReturn)
 alpha3 = alphaCalc(betaReturns=betaReturn, Returns=bothIntoAccountReturn)
 
 print("Beta: ", betaReturn)
-print("MA return: ", movingAverageBacktestReturn, "MA alpha: ", alpha1)
-print("RSI return: ", RSIBacktestReturn, "RSI alpha: ", alpha2)
-print("Both return: ", bothIntoAccountReturn, "Both alpha: ", alpha3)
+print("MA return: ", movingAverageBacktestReturn, " MA alpha: ", alpha1)
+print("RSI return: ", RSIBacktestReturn, " RSI alpha: ", alpha2)
+print("Both return: ", bothIntoAccountReturn, " Both alpha: ", alpha3)
