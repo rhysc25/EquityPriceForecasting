@@ -1,5 +1,7 @@
 import requests
 from AlpacaKeys import key, secretKey
+import json
+import pandas as pd
 
 def dataFetch(parameters):
 
@@ -22,4 +24,15 @@ def dataFetch(parameters):
     response = requests.get(url, headers=headers)
     marketData = response.text
 
-    return marketData
+    marketDataDict = json.loads(marketData)
+    """
+    Sorts the close, high, low, number of trades, open, time stamp, volume of trades and the volume weighted price
+    into a pandas dataframe
+    """
+    instrument = parameters["symbols"]
+    marketDataFrame = pd.DataFrame(marketDataDict["bars"][instrument])
+
+    shape = marketDataFrame.shape
+    rowsTotal= shape[0]
+
+    return marketDataFrame, rowsTotal

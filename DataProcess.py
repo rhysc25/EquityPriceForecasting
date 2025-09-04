@@ -1,19 +1,7 @@
-import json
-import pandas as pd
 import numpy as np
+from GlobalVariables import marketDataFrame, rowsTotal
 
-def dataProcess(marketData, parameters):
-
-    marketDataDict = json.loads(marketData)
-    """
-    Sorts the close, high, low, number of trades, open, time stamp, volume of trades and the volume weighted price
-    into a pandas dataframe
-    """
-    instrument = parameters["symbols"]
-    marketDataFrame = pd.DataFrame(marketDataDict["bars"][instrument])
-
-    shape = marketDataFrame.shape
-    rowsTotal, columnsTotal = shape[0], shape[1]
+def dataProcess(parameters):
 
     timeArray = np.array([])
     vwArray = np.array([])
@@ -22,4 +10,4 @@ def dataProcess(marketData, parameters):
         timeArray = np.append(timeArray, marketDataFrame["t"][i])
         vwArray = np.append(vwArray, marketDataFrame["vw"][i])
 
-    return timeArray, vwArray, marketDataFrame
+    return timeArray, vwArray

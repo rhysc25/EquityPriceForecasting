@@ -2,14 +2,11 @@ from DataFetch import dataFetch
 from DataProcess import dataProcess
 from TechnicalAnalysis import movingAverageCrossover
 from DataDisplay import dataDisplay
-
-parameters = {"symbols": "SPY", "timeframe": "1D", "start": "2022-01-01T00%3A00%3A00Z", "end": "2023-01-01T00%3A00%3A00Z", 
-            "limit": "1000", "adjustment": "all", "asof": "", "feed": "sip", "currency": "", "page_token": "", "sort": "asc"}
+from Parameters import parameters
 
 def main(parameters):
-    marketData = dataFetch(parameters=parameters)
-    timeArray, vwArray, marketDataFrame = dataProcess(marketData=marketData, parameters=parameters)
-    buyTimes, sellTimes, marketDataFrame = movingAverageCrossover(marketDataFrame=marketDataFrame)
+    timeArray, vwArray= dataProcess(parameters=parameters)
+    buyTimes, sellTimes= movingAverageCrossover()
     dataDisplay(timeArray=timeArray, vwArray=vwArray, parameters=parameters)
 
 if __name__ == "__main__":
