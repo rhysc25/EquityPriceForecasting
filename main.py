@@ -1,13 +1,13 @@
-from DataFetch import dataFetch
-from DataProcess import dataProcess
-from TechnicalAnalysis import movingAverageCrossover
+from TechnicalAnalysis import backTesting
 from DataDisplay import dataDisplay
+from StatisticalAnalysis import statisticalAnalysis
 from Parameters import parameters
 
 def main(parameters):
-    timeArray, vwArray= dataProcess(parameters=parameters)
-    buyTimes, sellTimes= movingAverageCrossover()
-    dataDisplay(timeArray=timeArray, vwArray=vwArray, parameters=parameters)
+    dataDisplay(parameters=parameters)
+    statisticalAnalysis()
+    backTesting()
+    
 
 if __name__ == "__main__":
    main(parameters)

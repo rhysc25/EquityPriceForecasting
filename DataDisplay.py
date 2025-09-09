@@ -1,8 +1,19 @@
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
+from GlobalVariables import marketDataFrame, rowsTotal
 import numpy as np
 
-def dataDisplay(timeArray, vwArray, parameters):
+def dataProcess():
+
+    timeArray = marketDataFrame["t"].to_numpy()
+    vwArray   = marketDataFrame["vw"].to_numpy()
+
+    return timeArray, vwArray
+
+def dataDisplay(parameters):
+
+    timeArray, vwArray = dataProcess()
+
     plt.clf()
     
     symbol = parameters["symbols"]

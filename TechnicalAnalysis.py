@@ -1,48 +1,11 @@
 import numpy as np
-import pandas as pd
 from Backtesting import backtest, betaReturns, alphaCalc, andOrderLists
 from GlobalVariables import marketDataFrame, rowsTotal
 
 
-def simpleMovingAverageInc(sampleNumber):
-
-    temp = np.zeros(rowsTotal)
-
-    for i in range(0, rowsTotal):
-        if i < sampleNumber:
-            sum = 0
-            for j in range(0, i+1):
-                sum += marketDataFrame["c"][j]
-            temp[i] = sum/(i+1)
-        else:    
-            sum = 0
-            for j in range(i + 1 - sampleNumber, i + 1):
-                sum += marketDataFrame["c"][j]
-            temp[i] = sum/sampleNumber
-    
+def simpleMovingAverage(sampleNumber):
     num = str(sampleNumber)
-    marketDataFrame["ma"+num] = temp
-
-def simpleMovingAverageExc(sampleNumber): 
-
-    temp = np.zeros(rowsTotal)
-
-    for i in range(0, rowsTotal):
-        if i == 0:
-            temp[i] = marketDataFrame["c"][i]
-        elif i < sampleNumber:
-            sum = 0
-            for j in range(0, i):
-                sum += marketDataFrame["c"][j]
-            temp[i] = sum/(i)
-        else:    
-            sum = 0
-            for j in range(i - sampleNumber, i):
-                sum += marketDataFrame["c"][j]
-            temp[i] = sum/sampleNumber
-    
-    num = str(sampleNumber)
-    marketDataFrame["ma"+num] = temp
+    marketDataFrame["ma" + num] = marketDataFrame["c"].rolling(window=sampleNumber, min_periods=1).mean()
 
 def exponentialMovingAverageExc(scaleFactor):
 
@@ -128,8 +91,8 @@ def movingAverageCrossoverLogic(i, buyTimes, sellTimes, orders): #Needs edge cas
     return buyTimes, sellTimes, orders
 
 def movingAverageCrossover():
-    marketDataFrame = simpleMovingAverageExc(sampleNumber= 5)
-    marketDataFrame = simpleMovingAverageExc(sampleNumber= 15)
+    simpleMovingAverage(sampleNumber= 5)
+    simpleMovingAverage(sampleNumber= 15)
     
     buyTimes = np.array([])
     sellTimes = np.array([])
@@ -141,28 +104,25 @@ def movingAverageCrossover():
 
     return buyTimes, sellTimes, orders
 
-buyTimes, sellTimes, movingAverageOrders= movingAverageCrossover()
-exponentialMovingAverageExc(scaleFactor=0.5)
-RSIOrders = RSI(periods=20)
+def backTesting():
 
-bothIntoAccountOrders = andOrderLists(orders1=movingAverageOrders,orders2=RSIOrders)
+    buyTimes, sellTimes, movingAverageOrders= movingAverageCrossover()
+    exponentialMovingAverageExc(scaleFactor=0.5)
+    RSIOrders = RSI(periods=20)
 
-betaReturn = betaReturns()
-movingAverageBacktestReturn = backtest(orders=movingAverageOrders, balance=100, propInitBuy=1, propBuy=0.1, propSell=0.05)
-RSIBacktestReturn = backtest(orders = RSIOrders, balance=100, propInitBuy=1, propBuy=0.1, propSell=0.05)
-bothIntoAccountReturn = backtest(orders = bothIntoAccountOrders, balance=100, propInitBuy= 1, propBuy=0.1, propSell=0.05)
+    bothIntoAccountOrders = andOrderLists(orders1=movingAverageOrders,orders2=RSIOrders)
+
+    betaReturn = betaReturns()
+    movingAverageBacktestReturn = backtest(orders=movingAverageOrders, balance=100, propInitBuy=1, propBuy=0.1, propSell=0.05)
+    RSIBacktestReturn = backtest(orders = RSIOrders, balance=100, propInitBuy=1, propBuy=0.1, propSell=0.05)
+    bothIntoAccountReturn = backtest(orders = bothIntoAccountOrders, balance=100, propInitBuy= 1, propBuy=0.1, propSell=0.05)
 
 
-alpha1 = alphaCalc(betaReturns=betaReturn, Returns= movingAverageBacktestReturn)
-alpha2 = alphaCalc(betaReturns=betaReturn, Returns=RSIBacktestReturn)
-alpha3 = alphaCalc(betaReturns=betaReturn, Returns=bothIntoAccountReturn)
+    alpha1 = alphaCalc(betaReturns=betaReturn, Returns= movingAverageBacktestReturn)
+    alpha2 = alphaCalc(betaReturns=betaReturn, Returns=RSIBacktestReturn)
+    alpha3 = alphaCalc(betaReturns=betaReturn, Returns=bothIntoAccountReturn)
 
-print("Beta: ", betaReturn)
-print("MA return: ", movingAverageBacktestReturn, " MA alpha: ", alpha1)
-print("RSI return: ", RSIBacktestReturn, " RSI alpha: ", alpha2)
-print("Both return: ", bothIntoAccountReturn, " Both alpha: ", alpha3)
-
-print(marketDataFrame)
-print(movingAverageOrders)
-print(RSIOrders)
-print(bothIntoAccountOrders)
+    print("Beta: ", betaReturn)
+    print("MA return: ", movingAverageBacktestReturn, " MA alpha: ", alpha1)
+    print("RSI return: ", RSIBacktestReturn, " RSI alpha: ", alpha2)
+    print("Both return: ", bothIntoAccountReturn, " Both alpha: ", alpha3)
