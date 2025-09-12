@@ -32,7 +32,11 @@ def dataFetch(parameters):
     instrument = parameters["symbols"]
     marketDataFrame = pd.DataFrame(marketDataDict["bars"][instrument])
 
+    marketDataFrame['t'] = pd.to_datetime(marketDataFrame['t']).dt.date
+
     shape = marketDataFrame.shape
     rowsTotal= shape[0]
+
+    print(marketDataFrame)
 
     return marketDataFrame, rowsTotal

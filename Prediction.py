@@ -1,5 +1,13 @@
 from GlobalVariables import marketDataFrame, rowsTotal
 
+def periodAggregation(trainingProportion):
+    trainingPeriod = round(trainingProportion * rowsTotal)
+
+    trainingDataframe = marketDataFrame.iloc[:trainingPeriod]
+    validationDataframe = marketDataFrame.iloc[trainingPeriod:]
+
+    return trainingDataframe, validationDataframe
+
 def currentRSI(periods):
 
     gainSum = 0

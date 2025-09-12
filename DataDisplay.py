@@ -1,39 +1,64 @@
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 from GlobalVariables import marketDataFrame, rowsTotal
-import numpy as np
+import matplotlib.dates as mdates
 
-def dataProcess():
+def plotWithIndicators(parameters, show_ma=None, show_rsi=False):
+    # show_ma : list or None
+    # show_rsi: bool
 
     timeArray = marketDataFrame["t"].to_numpy()
-    vwArray   = marketDataFrame["vw"].to_numpy()
+    vwArray = marketDataFrame["vw"].to_numpy()
 
-    return timeArray, vwArray
+    # Setup subplots
+    if show_rsi:
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8), sharex=True,
+                                       gridspec_kw={'height_ratios': [3, 1]})
+    else:
+        fig, ax1 = plt.subplots(figsize=(12, 6))
+        ax2 = None
 
-def dataDisplay(parameters):
+    # Plot main price chart
+    ax1.plot(timeArray, vwArray, label='VWAP', color='black')
 
-    timeArray, vwArray = dataProcess()
+    if show_ma:
+        for ma in show_ma:
+            if ma in marketDataFrame.columns:
+                ax1.plot(timeArray, marketDataFrame[ma], label=ma.upper())
+            else:
+                print(f"Warning: '{ma}' not in DataFrame columns")
 
-    plt.clf()
-    
     symbol = parameters["symbols"]
     title = symbol + " Price"
-    print(title)
-    plt.title(title)
-    plt.xlabel('Time')
+    ax1.set_title(title)
 
     if parameters["currency"] == "":
         units = "USD"
     else:
         units = parameters["currency"]
+    ax1.set_ylabel("Price /" + units)
 
-    plt.ylabel("Price /" + units)
+    ax1.grid(True)
+    ax1.legend()
+    ax1.xaxis.set_major_locator(MaxNLocator(nbins=10))
 
-    ax = plt.gca()
-    ax.xaxis.set_major_locator(MaxNLocator(nbins=10))  # Limit to 10 ticks
+    # 🔹 Format x-axis as YYYY-MM-DD
+    ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+
+    # Plot RSI below if requested
+    if show_rsi:
+        if 'rsi' not in marketDataFrame.columns:
+            print("Warning: 'rsi' column not found")
+        else:
+            ax2.plot(timeArray, marketDataFrame['rsi'], label='RSI', color='purple')
+            ax2.set_ylabel("RSI")
+            ax2.grid(True)
+            ax2.axhline(70, color='red', linestyle='--', linewidth=0.8)  # overbought line
+            ax2.axhline(30, color='green', linestyle='--', linewidth=0.8)  # oversold line
+            ax2.legend()
+            # 🔹 also format RSI subplot x-axis
+            ax2.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+
     plt.xticks(rotation=45)
-
-    plt.grid()
-    plt.plot(timeArray, vwArray, label='Volume Weighted Average Price')
-    plt.legend()
+    plt.tight_layout()
     plt.show()
