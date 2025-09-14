@@ -40,8 +40,8 @@ def currentExponentialMovingAverage(scaleFactor, sampleNumber):
     for i in range(1, sampleNumber):
         i = sampleNumber - i
         if i == sampleNumber - 1:
-            temp += Global.marketDataFrame["c"][-i]
+            temp += Global.marketDataFrame["c"].iloc[-i]
         else:
-            temp = Global.marketDataFrame["c"][-i] * scaleFactor + temp * (1 - scaleFactor)
+            temp = Global.marketDataFrame["c"].iloc[-i] * scaleFactor + temp * (1 - scaleFactor)
     
     return temp
