@@ -1,14 +1,15 @@
-from GlobalVariables import marketDataFrame, rowsTotal
+import Global
 
 def diffColumn():
-    marketDataFrame["diff"] = marketDataFrame["c"].diff()
+    Global.marketDataFrame["diff"] = Global.marketDataFrame["c"].diff()
 
 def statsCalc(column):
-    meanVal = marketDataFrame[column].mean()
-    varVal  = marketDataFrame[column].var()
+    meanVal = Global.marketDataFrame[column].mean()
+    varVal  = Global.marketDataFrame[column].var()
     return meanVal, varVal
 
 def statisticalAnalysis():
+    print(Global.marketDataFrame)
     diffColumn()
     meanReturn, varReturn = statsCalc("diff")
     meanPrice, varPrice = statsCalc("c")

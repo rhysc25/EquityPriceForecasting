@@ -1,8 +1,8 @@
-from GlobalVariables import marketDataFrame, rowsTotal
+import Global
 
 def betaReturns():
 
-    percReturns = 100 * (marketDataFrame["c"][rowsTotal - 1] - marketDataFrame["c"][0])/marketDataFrame["c"][0]
+    percReturns = 100 * (Global.marketDataFrame["c"][Global.rowsTotal - 1] - Global.marketDataFrame["c"][0])/Global.marketDataFrame["c"][0]
 
     return percReturns
 
@@ -11,20 +11,20 @@ def backtest(orders, balance, propInitBuy, propBuy, propSell):
     initialBalance = balance
     sharesOwned = 0
     
-    sharesOwned += (balance * propInitBuy)/marketDataFrame["c"][0]
+    sharesOwned += (balance * propInitBuy)/Global.marketDataFrame["c"][0]
     balance -= (balance*propInitBuy)
     
     for order in orders:
         num = order[1]
         if order[0] == "buy":
-            sharesOwned += (balance * propBuy)/marketDataFrame["c"][num]
+            sharesOwned += (balance * propBuy)/Global.marketDataFrame["c"][num]
             balance -= balance * propBuy
         if order[0] == "sell":
-            sharesValue = sharesOwned * marketDataFrame["c"][num]
-            sharesOwned -= (sharesValue * propSell)/marketDataFrame["c"][num]
+            sharesValue = sharesOwned * Global.marketDataFrame["c"][num]
+            sharesOwned -= (sharesValue * propSell)/Global.marketDataFrame["c"][num]
             balance += sharesValue * propSell    
     
-    assetTotal = balance + sharesOwned * marketDataFrame["c"][rowsTotal - 1]
+    assetTotal = balance + sharesOwned * Global.marketDataFrame["c"][Global.rowsTotal - 1]
     percReturns = 100*(assetTotal - initialBalance)/initialBalance
 
     return percReturns

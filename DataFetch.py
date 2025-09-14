@@ -36,7 +36,5 @@ def dataFetch(parameters):
 
     shape = marketDataFrame.shape
     rowsTotal= shape[0]
-
-    print(marketDataFrame)
-
+    
     return marketDataFrame, rowsTotal

@@ -1,33 +1,33 @@
 import numpy as np
 from Backtesting import backtest, betaReturns, alphaCalc, andOrderLists
-from GlobalVariables import marketDataFrame, rowsTotal
+import Global
 
 
 def simpleMovingAverage(sampleNumber):
     num = str(sampleNumber)
-    marketDataFrame["ma" + num] = marketDataFrame["c"].rolling(window=sampleNumber, min_periods=1).mean()
+    Global.marketDataFrame["ma" + num] = Global.marketDataFrame["c"].rolling(window=sampleNumber, min_periods=1).mean()
 
 def exponentialMovingAverageExc(scaleFactor):
 
-    temp = np.zeros(rowsTotal)
+    temp = np.zeros(Global.rowsTotal)
 
-    for i in range(0, rowsTotal):
+    for i in range(0, Global.rowsTotal):
         if i == 0:
-            temp[0] = marketDataFrame["c"][0]
+            temp[0] = Global.marketDataFrame["c"][0]
         else:
-            temp[i] = marketDataFrame["c"][i] * scaleFactor + temp[i-1] * (1 - scaleFactor)
+            temp[i] = Global.marketDataFrame["c"][i] * scaleFactor + temp[i-1] * (1 - scaleFactor)
 
-    marketDataFrame["ema"] = temp
+    Global.marketDataFrame["ema"] = temp
 
 def RSI(periods):
 
-    temp = np.zeros(rowsTotal)
+    temp = np.zeros(Global.rowsTotal)
 
     rsiBuyTimes = np.array([])
     rsiSellTimes = np.array([])
     orders = []
 
-    for i in range(0, rowsTotal):
+    for i in range(0, Global.rowsTotal):
         gainSum = 0
         lossSum = 0
         if i == 0:
@@ -35,7 +35,7 @@ def RSI(periods):
             temp[i] = RSI
         elif i < periods:
             for j in range(0, i):
-                diff = marketDataFrame["c"][i - j] - marketDataFrame["c"][i - j - 1]
+                diff = Global.marketDataFrame["c"][i - j] - Global.marketDataFrame["c"][i - j - 1]
                 if diff > 0:
                     gainSum += diff
                 elif diff < 0:
@@ -47,16 +47,16 @@ def RSI(periods):
                 RSI = 100 - (100/(1 + RS))
 
                 if RSI > 70:
-                    rsiSellTimes = np.append(rsiSellTimes, (marketDataFrame["t"][i], marketDataFrame["vw"][i]))
+                    rsiSellTimes = np.append(rsiSellTimes, (Global.marketDataFrame["t"][i], Global.marketDataFrame["vw"][i]))
                     orders.append(["sell",i])
                 if RSI < 30:
-                    rsiBuyTimes = np.append(rsiBuyTimes, (marketDataFrame["t"][i], marketDataFrame["vw"][i]))
+                    rsiBuyTimes = np.append(rsiBuyTimes, (Global.marketDataFrame["t"][i], Global.marketDataFrame["vw"][i]))
                     orders.append(["buy",i])
 
             temp[i] = RSI
         else:
             for j in range(0, periods):
-                diff = marketDataFrame["c"][i - j] - marketDataFrame["c"][i - j - 1]
+                diff = Global.marketDataFrame["c"][i - j] - Global.marketDataFrame["c"][i - j - 1]
                 if diff > 0:
                     gainSum += diff
                 elif diff < 0:
@@ -68,25 +68,25 @@ def RSI(periods):
                 RSI = 100 - (100/(1 + RS))
 
                 if RSI > 70:
-                    rsiSellTimes = np.append(rsiSellTimes, [i, marketDataFrame["t"][i], marketDataFrame["vw"][i]])
+                    rsiSellTimes = np.append(rsiSellTimes, [i, Global.marketDataFrame["t"][i], Global.marketDataFrame["vw"][i]])
                     orders.append(["sell",i])
                 if RSI < 30:
-                    rsiBuyTimes = np.append(rsiBuyTimes, [i, marketDataFrame["t"][i], marketDataFrame["vw"][i]])
+                    rsiBuyTimes = np.append(rsiBuyTimes, [i, Global.marketDataFrame["t"][i], Global.marketDataFrame["vw"][i]])
                     orders.append(["buy",i])
 
             temp[i] = RSI
 
-    marketDataFrame["rsi"] = temp
+    Global.marketDataFrame["rsi"] = temp
     
     return orders
 
 
 def movingAverageCrossoverLogic(i, buyTimes, sellTimes, orders): #Needs edge cases, if both are equal
-    if marketDataFrame["ma5"][i] < marketDataFrame["ma15"][i] and marketDataFrame["ma5"][i+1] > marketDataFrame["ma15"][i+1]:
-        buyTimes = np.append(buyTimes, [i+1, marketDataFrame["t"][i+1], marketDataFrame["vw"][i+1]])
+    if Global.marketDataFrame["ma5"][i] < Global.marketDataFrame["ma15"][i] and Global.marketDataFrame["ma5"][i+1] > Global.marketDataFrame["ma15"][i+1]:
+        buyTimes = np.append(buyTimes, [i+1, Global.marketDataFrame["t"][i+1], Global.marketDataFrame["vw"][i+1]])
         orders.append(["buy",i+1])
-    elif marketDataFrame["ma5"][i] > marketDataFrame["ma15"][i] and marketDataFrame["ma5"][i+1] < marketDataFrame["ma15"][i+1]:
-        sellTimes = np.append(sellTimes, [i+1, marketDataFrame["t"][i+1], marketDataFrame["vw"][i+1]])
+    elif Global.marketDataFrame["ma5"][i] > Global.marketDataFrame["ma15"][i] and Global.marketDataFrame["ma5"][i+1] < Global.marketDataFrame["ma15"][i+1]:
+        sellTimes = np.append(sellTimes, [i+1, Global.marketDataFrame["t"][i+1], Global.marketDataFrame["vw"][i+1]])
         orders.append(["sell",i+1])
     return buyTimes, sellTimes, orders
 
@@ -99,7 +99,7 @@ def movingAverageCrossover():
 
     orders = []
 
-    for i in range(0,rowsTotal - 1):
+    for i in range(0,Global.rowsTotal - 1):
         buyTimes, sellTimes, orders = movingAverageCrossoverLogic(i, buyTimes=buyTimes, sellTimes=sellTimes, orders=orders)
 
     return buyTimes, sellTimes, orders

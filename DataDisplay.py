@@ -1,14 +1,14 @@
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
-from GlobalVariables import marketDataFrame, rowsTotal
+import Global
 import matplotlib.dates as mdates
 
 def plotWithIndicators(parameters, show_ma=None, show_rsi=False):
     # show_ma : list or None
     # show_rsi: bool
 
-    timeArray = marketDataFrame["t"].to_numpy()
-    vwArray = marketDataFrame["vw"].to_numpy()
+    timeArray = Global.marketDataFrame["t"].to_numpy()
+    vwArray = Global.marketDataFrame["vw"].to_numpy()
 
     # Setup subplots
     if show_rsi:
@@ -23,8 +23,8 @@ def plotWithIndicators(parameters, show_ma=None, show_rsi=False):
 
     if show_ma:
         for ma in show_ma:
-            if ma in marketDataFrame.columns:
-                ax1.plot(timeArray, marketDataFrame[ma], label=ma.upper())
+            if ma in Global.marketDataFrame.columns:
+                ax1.plot(timeArray, Global.marketDataFrame[ma], label=ma.upper())
             else:
                 print(f"Warning: '{ma}' not in DataFrame columns")
 
@@ -47,10 +47,10 @@ def plotWithIndicators(parameters, show_ma=None, show_rsi=False):
 
     # Plot RSI below if requested
     if show_rsi:
-        if 'rsi' not in marketDataFrame.columns:
+        if 'rsi' not in Global.marketDataFrame.columns:
             print("Warning: 'rsi' column not found")
         else:
-            ax2.plot(timeArray, marketDataFrame['rsi'], label='RSI', color='purple')
+            ax2.plot(timeArray, Global.marketDataFrame['rsi'], label='RSI', color='purple')
             ax2.set_ylabel("RSI")
             ax2.grid(True)
             ax2.axhline(70, color='red', linestyle='--', linewidth=0.8)  # overbought line

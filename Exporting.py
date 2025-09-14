@@ -1,26 +1,33 @@
-from GlobalVariables import marketDataFrame, rowsTotal, engine
+import Global
 import pandas as pd
 from sqlalchemy import text
 
-def exportDataframe(parameters):
-    instrument = parameters["symbols"]
+def exportDataframeCSV():
 
-    marketDataFrame.to_csv('MarketData.csv')
-    insertIgnoreDataframe(marketDataFrame, engine, instrument)
+    Global.marketDataFrame.to_csv('MarketData.csv')
+
+
+def exportDataframeSQL(parameters):
+
+    instrument = parameters["symbols"]
+    try: insertIgnoreDataframe(Global.marketDataFrame, Global.engine, instrument)
+    except: 
+        print("boo")
+        pass
 
 def exportToSQL(parameters):
 
     instrument = parameters["symbols"]
 
     # Push DataFrame into MariaDB table
-    marketDataFrame.to_sql(instrument, con=engine, if_exists='append', index=False)
+    Global.marketDataFrame.to_sql(instrument, con=Global.engine, if_exists='append', index=False)
 
 def importFromSQL(parameters):
 
     instrument = parameters["symbols"]
 
-    start = marketDataFrame["t"].iloc[0]
-    end   = marketDataFrame["t"].iloc[-1]
+    start = Global.marketDataFrame["t"].iloc[0]
+    end   = Global.marketDataFrame["t"].iloc[-1]
 
     # If t is datetime.date or datetime64, convert to string first
     start_str = start.strftime('%Y-%m-%d')
@@ -28,17 +35,22 @@ def importFromSQL(parameters):
 
     query = f"SELECT t FROM {instrument} WHERE t BETWEEN '{start_str}' AND '{end_str}';"
 
-    dfFromSQL = pd.read_sql(query, con=engine)
+    dfFromSQL = pd.read_sql(query, con=Global.engine)
 
-    return dfFromSQL
+    shape = dfFromSQL.shape
+    rowsTotal= shape[0]
+
+    return dfFromSQL, rowsTotal
 
 def checkForExistence(parameters):
 
     instrument = parameters["symbols"]
     query = "SELECT t FROM " + instrument + ";"
-    tColumn = pd.read_sql(query, con=engine)
 
-    allIn = marketDataFrame["t"].isin(tColumn["t"]).all()
+    try: tColumn = pd.read_sql(query, con=Global.engine)
+    except: return False
+
+    allIn = Global.marketDataFrame["t"].isin(tColumn["t"]).all()
 
     return allIn
 
