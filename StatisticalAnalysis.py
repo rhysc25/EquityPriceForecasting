@@ -9,7 +9,7 @@ def statsCalc(column):
     return meanVal, varVal
 
 def statisticalAnalysis():
-    print(Global.marketDataFrame)
+ 
     diffColumn()
     meanReturn, varReturn = statsCalc("diff")
     meanPrice, varPrice = statsCalc("c")

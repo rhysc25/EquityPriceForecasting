@@ -11,29 +11,17 @@ def exportDataframeSQL(parameters):
 
     instrument = parameters["symbols"]
     try: insertIgnoreDataframe(Global.marketDataFrame, Global.engine, instrument)
-    except: 
-        print("boo")
-        pass
+    except: pass
 
-def exportToSQL(parameters):
-
-    instrument = parameters["symbols"]
-
-    # Push DataFrame into MariaDB table
-    Global.marketDataFrame.to_sql(instrument, con=Global.engine, if_exists='append', index=False)
 
 def importFromSQL(parameters):
 
     instrument = parameters["symbols"]
 
-    start = Global.marketDataFrame["t"].iloc[0]
-    end   = Global.marketDataFrame["t"].iloc[-1]
+    start = pd.to_datetime(parameters["start"].split("T")[0]).date()
+    end = pd.to_datetime(parameters["end"].split("T")[0]).date()
 
-    # If t is datetime.date or datetime64, convert to string first
-    start_str = start.strftime('%Y-%m-%d')
-    end_str   = end.strftime('%Y-%m-%d')
-
-    query = f"SELECT t FROM {instrument} WHERE t BETWEEN '{start_str}' AND '{end_str}';"
+    query = f"SELECT * FROM {instrument} WHERE t BETWEEN '{start}' AND '{end}';"
 
     dfFromSQL = pd.read_sql(query, con=Global.engine)
 
@@ -50,14 +38,49 @@ def checkForExistence(parameters):
     try: tColumn = pd.read_sql(query, con=Global.engine)
     except: return False
 
-    allIn = Global.marketDataFrame["t"].isin(tColumn["t"]).all()
+    start = pd.to_datetime(parameters["start"].split("T")[0]).date()
+    end = pd.to_datetime(parameters["end"].split("T")[0]).date()
+
+    if (start in tColumn['t'].values) and (end in tColumn['t'].values):
+        allIn = True
+    else:
+        allIn = False
 
     return allIn
 
 
+def insertIgnoreDataframe(df, engine, table_name):
+
+    command1 = text(f"""CREATE TABLE IF NOT EXISTS `{table_name}` (
+        t DATE NOT NULL,      
+        o DECIMAL(10,2),          
+        h DECIMAL(10,2),         
+        l DECIMAL(10,2),    
+        c DECIMAL(10,2),  
+        n BIGINT,      
+        v BIGINT,
+        vw DECIMAL(10,2),
+        PRIMARY KEY (t)
+    );""")
+
+    with engine.begin() as conn:
+        conn.execute(command1)
+    
+    all_cols = list(df.columns)
+    cols_sql = ", ".join(f"`{c}`" for c in all_cols)
+    params_sql = ", ".join(f":{c}" for c in all_cols)
+
+    insert_sql = text(f"""
+        INSERT IGNORE INTO {table_name} ({cols_sql})
+        VALUES ({params_sql})
+    """)
+
+    with engine.begin() as conn:
+        conn.execute(insert_sql, df.to_dict(orient='records'))
+
+
 def upsertDataframe(df, engine, table_name, key_columns):
 
-    # All columns from the DataFrame
     all_cols = list(df.columns)
 
     # Columns to insert
@@ -74,20 +97,5 @@ def upsertDataframe(df, engine, table_name, key_columns):
         ON DUPLICATE KEY UPDATE {update_sql}
     """)
 
-    # Execute in one transaction
     with engine.begin() as conn:
         conn.execute(upsert_sql, df.to_dict(orient='records'))
-
-
-def insertIgnoreDataframe(df, engine, table_name):
-    all_cols = list(df.columns)
-    cols_sql = ", ".join(f"`{c}`" for c in all_cols)
-    params_sql = ", ".join(f":{c}" for c in all_cols)
-
-    insert_sql = text(f"""
-        INSERT IGNORE INTO {table_name} ({cols_sql})
-        VALUES ({params_sql})
-    """)
-
-    with engine.begin() as conn:
-        conn.execute(insert_sql, df.to_dict(orient='records'))
