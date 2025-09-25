@@ -13,3 +13,7 @@ def statisticalAnalysis():
     diffColumn()
     meanReturn, varReturn = statsCalc("diff")
     meanPrice, varPrice = statsCalc("c")
+
+def sharpeRatio():
+    mean, var = statsCalc("diff")
+    return mean/var
