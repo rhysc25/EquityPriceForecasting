@@ -2,6 +2,19 @@ import requests
 from AlpacaKeys import key, secretKey
 import json
 import pandas as pd
+import urllib.parse
+from datetime import datetime, timedelta
+
+def backInTime(parameters):
+
+    raw_ts = parameters["start"]
+    decoded_ts = urllib.parse.unquote(raw_ts)
+    dt = datetime.strptime(decoded_ts, "%Y-%m-%dT%H:%M:%SZ")
+    new_dt = dt - timedelta(days=20)
+    new_ts = new_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+    encoded_ts = urllib.parse.quote(new_ts, safe='')
+
+    return encoded_ts
 
 def dataFetch(parameters):
 
@@ -12,6 +25,9 @@ def dataFetch(parameters):
             pass
         elif parameters[parameter] == "":
             pass
+        elif parameter == "start":
+            start = backInTime(parameters=parameters)
+            url = url + "&" + parameter + "=" + start
         else:
             url = url + "&" + parameter + "=" + parameters[parameter]
 
@@ -38,3 +54,4 @@ def dataFetch(parameters):
     rowsTotal= shape[0]
     
     return marketDataFrame, rowsTotal
+

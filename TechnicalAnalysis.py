@@ -2,7 +2,6 @@ import numpy as np
 from Backtesting import backtest, betaReturns, alphaCalc, andOrderLists
 import Global
 
-
 def simpleMovingAverage(sampleNumber):
     num = str(sampleNumber)
     Global.marketDataFrame["ma" + num] = Global.marketDataFrame["c"].rolling(window=sampleNumber, min_periods=1).mean()

@@ -2,6 +2,12 @@ import Global
 import pandas as pd
 from sqlalchemy import text
 
+def chopDateFrame(parameters):
+    start = pd.to_datetime(parameters["start"]).dt.date
+    mask = Global.marketDataFrame['t'] >= start
+    filtered_df = Global.marketDataFrame[mask]
+    return filtered_df
+
 def exportDataframeCSV():
 
     Global.marketDataFrame.to_csv('MarketData.csv')

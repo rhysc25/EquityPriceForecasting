@@ -19,19 +19,19 @@ def main(parameters):
     
     # Import from SQL Database
     importIfExists(parameters=parameters) # Needs a better way to check, takes too long
-    exportDataframeSQL(parameters=parameters)
+    #exportDataframeSQL(parameters=parameters)
     
     # Fundamental and Statistical Analysis
     statisticalAnalysis()
     backTesting()
 
     # Models
-    monteCarloSim()
-    RandomForestAlgo()
-    model = linearRegression()
+    #monteCarloSim()
+    #RandomForestAlgo()
+    #model = linearRegression()
 
     # Export and Plot
-    exportDataframeCSV()
+    #exportDataframeCSV()
     plotWithIndicators(parameters=parameters, show_ma = ["ema", "ma5", "ma15"], show_rsi=True)
 
     
