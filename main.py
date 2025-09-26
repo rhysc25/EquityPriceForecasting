@@ -10,16 +10,16 @@ from MonteCarlo import monteCarloSim
 import Global
 
 def importIfExists(parameters): 
-    #if checkForExistence(parameters=parameters) == True:
-    #    Global.marketDataFrame, Global.rowsTotal = importFromSQL(parameters=parameters)
-    #else:
+    if checkForExistence(parameters=parameters) == True:
+        Global.marketDataFrame, Global.rowsTotal = importFromSQL(parameters=parameters)
+    else:
         Global.marketDataFrame, Global.rowsTotal = dataFetch(parameters=parameters)
 
 def main(parameters):
     
     # Import from SQL Database
     importIfExists(parameters=parameters) # Needs a better way to check, takes too long
-    #exportDataframeSQL(parameters=parameters)
+    exportDataframeSQL(parameters=parameters)
     
     # Fundamental and Statistical Analysis
     statisticalAnalysis()

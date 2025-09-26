@@ -2,6 +2,11 @@ AlpacaKeys.py
 notes.txt
 MarketData.csv
 
+node_modules/
+package-lock.json
+package.json
+.vscode/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
