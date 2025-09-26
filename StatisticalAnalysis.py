@@ -1,7 +1,5 @@
 import Global
-
-def diffColumn():
-    Global.marketDataFrame["diff"] = Global.marketDataFrame["c"].diff()
+from AddColumns import diffColumn
 
 def statsCalc(column):
     meanVal = Global.marketDataFrame[column].mean()
@@ -10,10 +8,13 @@ def statsCalc(column):
 
 def statisticalAnalysis():
  
-    diffColumn()
+    if "diff" not in Global.marketDataFrame.columns:
+        diffColumn()
     meanReturn, varReturn = statsCalc("diff")
     meanPrice, varPrice = statsCalc("c")
 
 def sharpeRatio():
+    if "diff" not in Global.marketDataFrame.columns:
+        diffColumn()
     mean, var = statsCalc("diff")
     return mean/var

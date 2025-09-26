@@ -2,11 +2,12 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
-import Global
+from Exporting import chopDateFrame
+from Parameters import parameters
 
 def RandomForestAlgo():
 
-    df = Global.marketDataFrame.copy()
+    df = chopDateFrame(parameters=parameters)
 
     # Create target labels
     # 1 if next day's close is higher, 0 if lower

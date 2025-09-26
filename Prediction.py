@@ -1,10 +1,15 @@
 import Global
+from Exporting import chopDateFrame
+from Parameters import parameters
 
 def periodAggregation(trainingProportion):
-    trainingPeriod = round(trainingProportion * Global.rowsTotal)
+    df = chopDateFrame(parameters=parameters)
+    dfRows = df.shape[0]
 
-    trainingDataframe = Global.marketDataFrame.iloc[:trainingPeriod]
-    validationDataframe = Global.marketDataFrame.iloc[trainingPeriod:]
+    trainingPeriod = round(trainingProportion * dfRows)
+
+    trainingDataframe = df.iloc[:trainingPeriod]
+    validationDataframe = df.iloc[trainingPeriod:]
 
     return trainingDataframe, validationDataframe
 

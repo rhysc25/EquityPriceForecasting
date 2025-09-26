@@ -1,18 +1,18 @@
 from TechnicalAnalysis import backTesting
 from DataDisplay import plotWithIndicators
 from StatisticalAnalysis import statisticalAnalysis
-from Exporting import exportDataframeSQL, checkForExistence, importFromSQL, exportDataframeCSV
+from Exporting import exportDataframeSQL, checkForExistence, importFromSQL, exportDataframeCSV, chopDateFrame
 from DataFetch import dataFetch
 from Parameters import parameters
 from MLRandomForests import RandomForestAlgo
-from MLLinearRegression2 import linearRegression
+from MLLinearRegression import linearRegression
 from MonteCarlo import monteCarloSim
 import Global
 
 def importIfExists(parameters): 
-    if checkForExistence(parameters=parameters) == True:
-        Global.marketDataFrame, Global.rowsTotal = importFromSQL(parameters=parameters)
-    else:
+    #if checkForExistence(parameters=parameters) == True:
+    #    Global.marketDataFrame, Global.rowsTotal = importFromSQL(parameters=parameters)
+    #else:
         Global.marketDataFrame, Global.rowsTotal = dataFetch(parameters=parameters)
 
 def main(parameters):
@@ -26,12 +26,13 @@ def main(parameters):
     backTesting()
 
     # Models
-    #monteCarloSim()
-    #RandomForestAlgo()
-    #model = linearRegression()
+    monteCarloSim()
+    RandomForestAlgo()
+    model = linearRegression()
 
     # Export and Plot
-    #exportDataframeCSV()
+    Global.marketDataFrame = chopDateFrame(parameters=parameters)
+    exportDataframeCSV()
     plotWithIndicators(parameters=parameters, show_ma = ["ema", "ma5", "ma15"], show_rsi=True)
 
     

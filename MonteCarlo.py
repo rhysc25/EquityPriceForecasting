@@ -1,9 +1,13 @@
 import Global
 import numpy as np
+from Exporting import chopDateFrame
+from Parameters import parameters
 
 def logNormalReturnsStdDev():
-    Global.marketDataFrame["logReturns"] = np.log(Global.marketDataFrame["c"] / Global.marketDataFrame["c"].shift(1))
-    return Global.marketDataFrame["logReturns"].std(skipna=True)
+    df = chopDateFrame(parameters=parameters)
+    dfRows = df.shape[0]
+    df["logReturns"] = np.log(df["c"] / df["c"].shift(1))
+    return df["logReturns"].std(skipna=True)
 
 def monteCarloSim():
     # Parameters

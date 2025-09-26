@@ -10,7 +10,7 @@ def backInTime(parameters):
     raw_ts = parameters["start"]
     decoded_ts = urllib.parse.unquote(raw_ts)
     dt = datetime.strptime(decoded_ts, "%Y-%m-%dT%H:%M:%SZ")
-    new_dt = dt - timedelta(days=20)
+    new_dt = dt - timedelta(days=30)
     new_ts = new_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
     encoded_ts = urllib.parse.quote(new_ts, safe='')
 

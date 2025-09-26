@@ -1,11 +1,13 @@
 import Global
 import pandas as pd
+import urllib.parse
 from sqlalchemy import text
 
 def chopDateFrame(parameters):
-    start = pd.to_datetime(parameters["start"]).dt.date
+    decoded_start = urllib.parse.unquote(parameters["start"])
+    start = pd.to_datetime(decoded_start).date()
     mask = Global.marketDataFrame['t'] >= start
-    filtered_df = Global.marketDataFrame[mask]
+    filtered_df = Global.marketDataFrame[mask].copy()
     return filtered_df
 
 def exportDataframeCSV():

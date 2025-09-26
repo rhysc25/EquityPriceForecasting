@@ -1,22 +1,6 @@
 import tensorflow as tf
 from Prediction import periodAggregation
 
-def makeFeatureColumns(features=["rsi"]):
-    # Must be fed some array of features (column names of our dataframe)
-    feature_columns = []
-    for feature in features:
-        feature_columns.append(tf.feature_column.numeric_column(feature, dtype  = tf.float32))
-    return feature_columns
-
-def makeInputFunction(data_df, label_df, num_epochs=10, shuffle=True, batch_size=32):
-    def inputFunction():
-        ds = tf.data.Dataset.from_tensor_slices((dict(data_df), label_df))
-        if shuffle:
-            ds = ds.shuffle(1000)
-        ds = ds.batch(batch_size).repeat(num_epochs)
-        return ds
-    return inputFunction
-
 def cleanDataframe(df, features):
     columns = set(df.columns)
     features = set(features)
@@ -26,30 +10,53 @@ def cleanDataframe(df, features):
     df.drop(columns=excess, inplace=True)
     return df
 
-def linearRegression(trainingProportion = 0.8, features = ["rsi"]):
-
+def linearRegression(trainingProportion=0.8, features=["rsi"], epochs=10, batch_size=32):
+    # Get your data
     trainingDataframe, validationDataframe = periodAggregation(trainingProportion=trainingProportion)
     
     trainingDataframe = trainingDataframe.copy()
     validationDataframe = validationDataframe.copy()
     trainingDataframe.dropna(inplace=True)  # drop rows with NaN
-    validationDataframe.dropna(inplace=True)  # drop rows with NaN returns
+    validationDataframe.dropna(inplace=True)  # drop rows with NaN
 
+    # Separate labels
     labelTrain = trainingDataframe.pop("c")
     labelValidate = validationDataframe.pop("c")
 
-    cleanDataframe(trainingDataframe, features)
-    cleanDataframe(validationDataframe, features)
+    # Keep only selected features
+    trainingDataframe = cleanDataframe(trainingDataframe, features)
+    validationDataframe = cleanDataframe(validationDataframe, features)
 
-    trainInputFunction = makeInputFunction(trainingDataframe, labelTrain, num_epochs=10, shuffle=True, batch_size=32)
-    validateInputFunction = makeInputFunction(validationDataframe, labelValidate, num_epochs=10, shuffle=True, batch_size=32)
+    # Convert to NumPy arrays for Keras
+    X_train = trainingDataframe[features].values.astype("float32")
+    X_val = validationDataframe[features].values.astype("float32")
+    y_train = labelTrain.values.astype("float32")
+    y_val = labelValidate.values.astype("float32")
 
-    feature_columns = makeFeatureColumns()
-    linearEst = tf.estimator.LinearClassifier(feature_columns=feature_columns)
+    # Normalization layer (optional but recommended)
+    normalizer = tf.keras.layers.Normalization()
+    normalizer.adapt(X_train)
 
-    linearEst.train(trainInputFunction)
-    result = linearEst.evaluate(validateInputFunction)
+    # Build a simple logistic regression model
+    model = tf.keras.Sequential([
+        normalizer,
+        tf.keras.layers.Dense(1, activation="sigmoid")  # linear classifier
+    ])
 
+    model.compile(optimizer="adam",
+                  loss="binary_crossentropy",
+                  metrics=["accuracy"])
+
+    # Train
+    history = model.fit(
+        X_train, y_train,
+        validation_data=(X_val, y_val),
+        epochs=epochs,
+        batch_size=batch_size
+    )
+
+    # Evaluate
+    result = model.evaluate(X_val, y_val, batch_size=batch_size, return_dict=True)
     print(result)
 
-# Currently uses legacy estimator
+    return model

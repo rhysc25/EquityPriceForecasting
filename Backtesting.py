@@ -1,4 +1,6 @@
 import Global
+from Exporting import chopDateFrame
+from Parameters import parameters
 
 def betaReturns():
 
@@ -8,23 +10,26 @@ def betaReturns():
 
 def backtest(orders, balance, propInitBuy, propBuy, propSell):
   
+    df = chopDateFrame(parameters=parameters)
+    dfRows = df.shape[0]
+
     initialBalance = balance
     sharesOwned = 0
     
-    sharesOwned += (balance * propInitBuy)/Global.marketDataFrame["c"][0]
+    sharesOwned += (balance * propInitBuy)/df["c"].iloc[0]
     balance -= (balance*propInitBuy)
     
     for order in orders:
         num = order[1]
         if order[0] == "buy":
-            sharesOwned += (balance * propBuy)/Global.marketDataFrame["c"][num]
+            sharesOwned += (balance * propBuy)/df["c"].iloc[num]
             balance -= balance * propBuy
         if order[0] == "sell":
-            sharesValue = sharesOwned * Global.marketDataFrame["c"][num]
-            sharesOwned -= (sharesValue * propSell)/Global.marketDataFrame["c"][num]
+            sharesValue = sharesOwned * df["c"].iloc[num]
+            sharesOwned -= (sharesValue * propSell)/df["c"].iloc[num]
             balance += sharesValue * propSell    
     
-    assetTotal = balance + sharesOwned * Global.marketDataFrame["c"][Global.rowsTotal - 1]
+    assetTotal = balance + sharesOwned * df["c"][dfRows - 1]
     percReturns = 100*(assetTotal - initialBalance)/initialBalance
 
     return percReturns
