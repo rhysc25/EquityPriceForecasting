@@ -7,33 +7,35 @@ from Parameters import parameters
 from MLRandomForests import RandomForestAlgo
 from MLLinearRegression import linearRegression
 from MonteCarlo import monteCarloSim
+from HiddenMarkov import HiddenMarkovAlgo
 import Global
 
 def importIfExists(parameters): 
-    if checkForExistence(parameters=parameters) == True:
-        Global.marketDataFrame, Global.rowsTotal = importFromSQL(parameters=parameters)
-    else:
+    #if checkForExistence(parameters=parameters) == True:
+    #    Global.marketDataFrame, Global.rowsTotal = importFromSQL(parameters=parameters)
+    #else:
         Global.marketDataFrame, Global.rowsTotal = dataFetch(parameters=parameters)
 
 def main(parameters):
     
     # Import from SQL Database
     importIfExists(parameters=parameters) # Needs a better way to check, takes too long
-    exportDataframeSQL(parameters=parameters)
+    #exportDataframeSQL(parameters=parameters)
     
     # Fundamental and Statistical Analysis
     statisticalAnalysis()
     backTesting()
 
     # Models
-    monteCarloSim()
-    RandomForestAlgo()
-    model = linearRegression()
+    #monteCarloSim()
+    #RandomForestAlgo()
+    #model = linearRegression()
+    HiddenMarkovAlgo()
 
     # Export and Plot
     Global.marketDataFrame = chopDateFrame(parameters=parameters)
-    exportDataframeCSV()
-    plotWithIndicators(parameters=parameters, show_ma = ["ema", "ma5", "ma15"], show_rsi=True)
+    #exportDataframeCSV()
+    #plotWithIndicators(parameters=parameters, show_ma = ["ema", "ma5", "ma15"], show_rsi=True)
 
     
 if __name__ == "__main__":
