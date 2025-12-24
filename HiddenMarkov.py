@@ -2,12 +2,21 @@ from Exporting import chopDateFrame
 from Parameters import parameters
 import numpy as np
 from hmmlearn.hmm import GaussianHMM
+import pandas as pd
 
 
 def rolling_zscore(series, window=20):
     mean = series.rolling(window).mean()
     std = series.rolling(window).std()
     return (series - mean) / std
+
+def classify_state(row):
+    if row["vol_30"] < -0.5 and row["autocorr_5"] < -0.3:
+        return "mean_reversion"
+    elif row["autocorr_5"] > 0.3 and row["vol_30"] > 0:
+        return "fast_trend"
+    else:
+        return "normal_trend"
 
 def HiddenMarkovAlgo():
 
@@ -87,6 +96,8 @@ def HiddenMarkovAlgo():
         1: "fast_trend",
         2: "mean_reversion"
     }
+
+    train_window = 100
 
     for t in range(train_window, len(df)):
 
