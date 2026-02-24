@@ -5,6 +5,10 @@ import plotly.express as px
 app = Flask(__name__)
 CORS(app)  # allow cross-origin requests
 
+@app.route('/')
+def homePage():
+    return jsonify({"message": "Welcome to your dashboard"})
+
 @app.route('/api/data')
 def get_data():
     return jsonify({"message": "Hello from Flask!"})

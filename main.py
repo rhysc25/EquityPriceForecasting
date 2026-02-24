@@ -4,9 +4,10 @@ from StatisticalAnalysis import statisticalAnalysis
 from Exporting import exportDataframeSQL, checkForExistence, importFromSQL, exportDataframeCSV, chopDateFrame
 from DataFetch import dataFetch
 from Parameters import parameters
-from MLRandomForests import RandomForestAlgo
-from MLLinearRegression import linearRegression
-from MonteCarlo import monteCarloSim
+from models.MLRandomForests import RandomForestAlgo
+from models.MLLinearRegression import linearRegression
+from models.MonteCarlo import monteCarloSim
+from models.LSTM import LSTMModel
 import Global
 
 def importIfExists(parameters): 
@@ -28,6 +29,7 @@ def main(parameters):
     # Models
     monteCarloSim()
     RandomForestAlgo()
+    LSTMModel()
     model = linearRegression()
 
     # Export and Plot
